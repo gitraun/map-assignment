@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import MapComponent from "./components/MapComponent";
 import MissionModal from "./components/MissionModal";
 import PolygonToolModal from "./components/PolygonToolModal";
+import "./App.css";
 
 function App() {
   const [mode, setMode] = useState(null); // Current drawing mode (LineString/Polygon)
@@ -9,6 +10,12 @@ function App() {
   const [showMissionModal, setShowMissionModal] = useState(false); // Toggle Mission Modal
   const [showPolygonModal, setShowPolygonModal] = useState(false); // Toggle Polygon Modal
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState(null); // Index for polygon insertion
+
+  // Handle starting the drawing process
+  const startDrawing = () => {
+    setMode("LineString");
+    setShowMissionModal(true); // Show Mission Modal when drawing starts
+  };
 
   // Handle inserting a polygon
   const handleInsertPolygon = (index, position) => {
@@ -34,20 +41,27 @@ function App() {
   };
 
   return (
-    <div>
-      <button onClick={() => setMode("LineString")}>Start Drawing</button>
-      <button onClick={() => setShowMissionModal(true)}>Mission Planner</button>
+    <div className="App">
+      <div className="App-header">
+        <button onClick={startDrawing}>Start Drawing</button>
+        <button onClick={() => setShowMissionModal(true)}>Mission Planner</button>
+      </div>
 
       <MapComponent mode={mode} setCoordinates={setCoordinates} setMode={setMode} />
 
+      {/* Mission Modal */}
       {showMissionModal && (
         <MissionModal
           coordinates={coordinates}
-          onClose={() => setShowMissionModal(false)}
+          onClose={() => {
+            setShowMissionModal(false);
+            setMode(null); // Stop drawing mode when modal closes
+          }}
           onInsertPolygon={handleInsertPolygon}
         />
       )}
 
+      {/* Polygon Tool Modal */}
       {showPolygonModal && (
         <PolygonToolModal
           onImport={handleImportPolygon}
